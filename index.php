@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php 
+ session_name("userLogin");
+ session_start();
     require_once 'inc/functions.php';
     $info = "";
     $task = $_GET['task']??'report';
@@ -19,6 +21,10 @@
         $id = filter_input( INPUT_POST, 'id', FILTER_SANITIZE_STRING );
         if($id){
             if($id !='' && $name !='' && $class !='' && $roll !=''){
+                if(!hasPrivilege()){
+                    header('location: index.php?task=report');
+                    return;
+                }
             $updateStudent = updateStudent($id, $name, $class, $roll);
             header('location: index.php?task=report');
             if($updateStudent){
@@ -29,6 +35,10 @@
              }
         }else{
             if($name !='' && $class !='' && $roll !=''){
+                if(!isAdmin()){
+                    header('location: index.php?task=report');
+                    return;
+                }
                 $studentSubmit = addStudent($name, $class, $roll);
                 if($studentSubmit){
                  header('location: index.php?task=report');
@@ -39,6 +49,10 @@
         }
     }
     if('delete'==$task){
+        if(!isAdmin()){
+            header('location: index.php?task=report');
+            return;
+        }
         $id = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_STRING );
         if($id>0){
             deleteStudent($id);

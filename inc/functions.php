@@ -48,7 +48,9 @@ function generateReport(){
             <th>Name</th>
             <th>Class</th>
             <th>Roll</th>
-            <th style="width:20%">Action</th>
+            <?php if(hasPrivilege()):  ?>
+                <th style="width:20%">Action</th>
+            <?php endif;  ?>
         </tr>
         <?php foreach($students as $student): ?>
             <tr>
@@ -56,7 +58,12 @@ function generateReport(){
                 <td><?php printf("%s", $student['name'] ); ?></td>
                 <td><?php printf("%s", $student['class'] ); ?></td>
                 <td><?php printf("%s", $student['roll'] ); ?></td>
-                <td><?php printf("<a href='index.php?task=edit&id=%s'>Edit</a> | <a href='index.php?task=delete&id=%s' class='delete' >Delete</a>", $student['id'], $student['id']); ?></th>
+                <?php if(isAdmin()):  ?>
+                    <td><?php printf("<a href='index.php?task=edit&id=%s'>Edit</a> | <a href='index.php?task=delete&id=%s' class='delete' >Delete</a>", $student['id'], $student['id']); ?></th>
+                <?php elseif(isEditor()):  ?>
+                    <td><?php printf("<a href='index.php?task=edit&id=%s'>Edit</a>", $student['id']); ?></th>
+                <?php endif;  ?>
+                
             </tr>
         <?php endforeach; ?> 
     </table>
@@ -140,4 +147,18 @@ function deleteStudent($id){
 function getNewId($studemts){
     $maxId = max(array_column($studemts, 'id'));
     return $maxId+1;
+}
+
+function isAdmin(){
+    if(isset( $_SESSION['role'])):
+        return ('admin' == $_SESSION['role']) ;
+    endif;
+}
+function isEditor(){
+    if(isset( $_SESSION['role'])):
+        return ('editor' == $_SESSION['role'] );
+    endif;
+}
+function hasPrivilege(){
+    return (isAdmin() || isEditor() );
 }

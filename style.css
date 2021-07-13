@@ -13,3 +13,6 @@ body {
     padding: 30px 0;
     background: #fff;
 }
+nav.overflow-hidden {
+    overflow: hidden;
+}
